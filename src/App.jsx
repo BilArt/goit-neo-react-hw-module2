@@ -1,35 +1,31 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useState } from 'react';
+import "./App.css";
+import Description from "./components/description/desciption";
+import Feedback from "./components/feedback/feedback";
+import Options from "./components/options/options";
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [feedbacks, setFeedbacks] = useState({
+    good: 0,
+    neutral: 0,
+    bad: 0,
+  });
+
+  // Функция для обновления фидбека
+  const updateFeedback = (feedbackType) => {
+    setFeedbacks((prevFeedbacks) => ({
+      ...prevFeedbacks,
+      [feedbackType]: prevFeedbacks[feedbackType] + 1,
+    }));
+  };
 
   return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    <div>
+      <Description />
+      <Feedback updateFeedback={updateFeedback} />
+      <Options feedbacks={feedbacks} />
+    </div>
+  );
 }
 
-export default App
+export default App;
