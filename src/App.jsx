@@ -1,16 +1,27 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import "./App.css";
 import Description from "./components/description/desciption";
 import Feedback from "./components/feedback/feedback";
 import Options from "./components/options/options";
 
 function App() {
-  const [feedbacks, setFeedbacks] = useState({
-    good: 0,
-    neutral: 0,
-    bad: 0,
-    totalFeedbacks: 0,
-  });
+  const getInitialFeedbacks = () => {
+    const savedFeedbacks = localStorage.getItem("feedbacks");
+    return savedFeedbacks
+      ? JSON.parse(savedFeedbacks)
+      : {
+          good: 0,
+          neutral: 0,
+          bad: 0,
+          totalFeedbacks: 0,
+        };
+  };
+
+  const [feedbacks, setFeedbacks] = useState(getInitialFeedbacks);
+
+  useEffect(() => {
+    localStorage.setItem("feedbacks", JSON.stringify(feedbacks));
+  }, [feedbacks]);
 
   const updateFeedback = (feedbackType) => {
     setFeedbacks((prevFeedbacks) => {
@@ -48,9 +59,9 @@ function App() {
         updateFeedback={updateFeedback}
         resetFeedbacks={resetFeedbacks}
       />
-      <Options 
+      <Options
         feedbacks={feedbacks}
-        positivePercentage={calculatePositivePercentage()} 
+        positivePercentage={calculatePositivePercentage()}
       />
     </div>
   );
