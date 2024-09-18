@@ -45,7 +45,6 @@ function App() {
     });
   };
 
-  // Расчет процента позитивных отзывов
   const calculatePositivePercentage = () => {
     const { good, totalFeedbacks } = feedbacks;
     if (totalFeedbacks === 0) return 0;
