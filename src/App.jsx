@@ -3,37 +3,31 @@ import "./App.css";
 import Description from "./components/description/desciption";
 import Feedback from "./components/feedback/feedback";
 import Options from "./components/options/options";
+import Notification from "./components/notification/notification";
 
 function App() {
-  const getInitialFeedbacks = () => {
-    const savedFeedbacks = localStorage.getItem("feedbacks");
-    return savedFeedbacks
-      ? JSON.parse(savedFeedbacks)
-      : {
-          good: 0,
-          neutral: 0,
-          bad: 0,
-          totalFeedbacks: 0,
-        };
-  };
+  const [feedbacks, setFeedbacks] = useState({
+    good: 0,
+    neutral: 0,
+    bad: 0,
+  });
 
-  const [feedbacks, setFeedbacks] = useState(getInitialFeedbacks);
+  useEffect(() => {
+    const savedFeedbacks = localStorage.getItem("feedbacks");
+    if (savedFeedbacks) {
+      setFeedbacks(JSON.parse(savedFeedbacks));
+    }
+  }, []);
 
   useEffect(() => {
     localStorage.setItem("feedbacks", JSON.stringify(feedbacks));
   }, [feedbacks]);
 
   const updateFeedback = (feedbackType) => {
-    setFeedbacks((prevFeedbacks) => {
-      const feedbacksCount = prevFeedbacks.totalFeedbacks + 1;
-      const newFeedbacks = {
-        ...prevFeedbacks,
-        [feedbackType]: prevFeedbacks[feedbackType] + 1,
-        totalFeedbacks: feedbacksCount,
-      };
-
-      return newFeedbacks;
-    });
+    setFeedbacks((prevFeedbacks) => ({
+      ...prevFeedbacks,
+      [feedbackType]: prevFeedbacks[feedbackType] + 1,
+    }));
   };
 
   const resetFeedbacks = () => {
@@ -41,12 +35,13 @@ function App() {
       good: 0,
       neutral: 0,
       bad: 0,
-      totalFeedbacks: 0,
     });
   };
 
+  const totalFeedbacks = feedbacks.good + feedbacks.neutral + feedbacks.bad;
+
   const calculatePositivePercentage = () => {
-    const { good, totalFeedbacks } = feedbacks;
+    const { good } = feedbacks;
     if (totalFeedbacks === 0) return 0;
     return Math.round((good / totalFeedbacks) * 100);
   };
@@ -54,14 +49,16 @@ function App() {
   return (
     <div>
       <Description />
-      <Feedback
-        updateFeedback={updateFeedback}
-        resetFeedbacks={resetFeedbacks}
+      <Feedback 
+        updateFeedback={updateFeedback} 
+        resetFeedbacks={resetFeedbacks} 
+        totalFeedbacks={totalFeedbacks}
       />
-      <Options
-        feedbacks={feedbacks}
-        positivePercentage={calculatePositivePercentage()}
-      />
+      {totalFeedbacks > 0 ? (
+        <Options feedbacks={feedbacks} positivePercentage={calculatePositivePercentage()} />
+      ) : (
+        <Notification message="No feedback given" />
+      )}
     </div>
   );
 }
