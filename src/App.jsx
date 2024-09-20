@@ -41,23 +41,25 @@ function App() {
   const totalFeedbacks = feedbacks.good + feedbacks.neutral + feedbacks.bad;
 
   const calculatePositivePercentage = () => {
-    const { good } = feedbacks;
-    if (totalFeedbacks === 0) return 0;
-    return Math.round((good / totalFeedbacks) * 100);
+    const { good, neutral } = feedbacks;
+    const total = good + neutral + feedbacks.bad;
+    if (total === 0) return 0;
+    return Math.round(((good + neutral) / total) * 100);
   };
+  
 
   return (
     <div>
       <Description />
-      <Feedback 
+      <Options 
+        feedbacks={feedbacks} 
         updateFeedback={updateFeedback} 
         resetFeedbacks={resetFeedbacks} 
-        totalFeedbacks={totalFeedbacks}
+        totalFeedbacks={totalFeedbacks} 
       />
-      {totalFeedbacks > 0 ? (
-        <Options feedbacks={feedbacks} positivePercentage={calculatePositivePercentage()} />
-      ) : (
-        <Notification message="No feedback given" />
+      {totalFeedbacks === 0 && <Notification message="No feedback given" />}
+      {totalFeedbacks > 0 && (
+        <Feedback positivePercentage={calculatePositivePercentage()} />
       )}
     </div>
   );

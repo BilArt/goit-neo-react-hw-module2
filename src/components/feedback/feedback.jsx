@@ -1,23 +1,16 @@
 import PropTypes from "prop-types";
 import styles from "./feedback.module.css";
 
-const Feedback = ({ updateFeedback, resetFeedbacks, totalFeedbacks }) => {
+const Feedback = ({ positivePercentage }) => {
   return (
     <div className={styles.feedbackBlock}>
-      <button onClick={() => updateFeedback("good")}>Good</button>
-      <button onClick={() => updateFeedback("neutral")}>Neutral</button>
-      <button onClick={() => updateFeedback("bad")}>Bad</button>
-      {totalFeedbacks > 0 && (
-        <button onClick={resetFeedbacks}>Reset</button>
-      )}
+      <h3>Positive Feedback: {positivePercentage}%</h3>
     </div>
   );
 };
 
 Feedback.propTypes = {
-  updateFeedback: PropTypes.func.isRequired,
-  resetFeedbacks: PropTypes.func.isRequired,
-  totalFeedbacks: PropTypes.number.isRequired,
+  positivePercentage: PropTypes.number.isRequired,
 };
 
 export default Feedback;
