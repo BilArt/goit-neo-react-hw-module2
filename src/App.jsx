@@ -6,18 +6,10 @@ import Options from "./components/options/options";
 import Notification from "./components/notification/notification";
 
 function App() {
-  const [feedbacks, setFeedbacks] = useState({
-    good: 0,
-    neutral: 0,
-    bad: 0,
-  });
-
-  useEffect(() => {
+  const [feedbacks, setFeedbacks] = useState(() => {
     const savedFeedbacks = localStorage.getItem("feedbacks");
-    if (savedFeedbacks) {
-      setFeedbacks(JSON.parse(savedFeedbacks));
-    }
-  }, []);
+    return savedFeedbacks ? JSON.parse(savedFeedbacks) : { good: 0, neutral: 0, bad: 0 };
+  });
 
   useEffect(() => {
     localStorage.setItem("feedbacks", JSON.stringify(feedbacks));
@@ -41,25 +33,27 @@ function App() {
   const totalFeedbacks = feedbacks.good + feedbacks.neutral + feedbacks.bad;
 
   const calculatePositivePercentage = () => {
-    const { good, neutral } = feedbacks;
-    const total = good + neutral + feedbacks.bad;
-    if (total === 0) return 0;
-    return Math.round(((good + neutral) / total) * 100);
+    const { good } = feedbacks;
+    if (totalFeedbacks === 0) return 0;
+    return Math.round((good / totalFeedbacks) * 100);
   };
-  
 
   return (
     <div>
       <Description />
       <Options 
-        feedbacks={feedbacks} 
         updateFeedback={updateFeedback} 
         resetFeedbacks={resetFeedbacks} 
         totalFeedbacks={totalFeedbacks} 
       />
-      {totalFeedbacks === 0 && <Notification message="No feedback given" />}
-      {totalFeedbacks > 0 && (
-        <Feedback positivePercentage={calculatePositivePercentage()} />
+      {totalFeedbacks === 0 ? (
+        <Notification message="No feedback given" />
+      ) : (
+        <Feedback 
+          feedbacks={feedbacks} 
+          positivePercentage={calculatePositivePercentage()} 
+          totalFeedbacks={totalFeedbacks} 
+        />
       )}
     </div>
   );
